@@ -1,0 +1,241 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L'ENTRE DU DÉSIR</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Raleway:wght@300&display=swap');
+
+        body {
+            font-family: 'Playfair Display', serif;
+            text-align: center;
+            background: linear-gradient(to bottom, #450000, #000000);
+            color: white;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .container {
+            margin-top: 50px;
+            position: relative;
+            z-index: 2;
+        }
+
+        h1 {
+            font-size: 50px;
+            color: #ff0033;
+            text-shadow: 2px 2px 5px black;
+        }
+
+        .box {
+            padding: 20px;
+            border: 2px solid white;
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 22px;
+            width: 80%;
+            max-width: 400px;
+            min-height: 100px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            background-color: #ff0033;
+            color: white;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            margin-top: 20px;
+            border-radius: 30px;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #cc0022;
+            transform: scale(1.1);
+        }
+
+        .btn:disabled {
+            background-color: gray;
+            cursor: not-allowed;
+        }
+
+        .hidden {
+            opacity: 0;
+        }
+
+        .timer {
+            font-size: 24px;
+            margin-top: 20px;
+            display: none;
+            font-weight: bold;
+        }
+
+        /* Cœurs animés */
+        .heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: red;
+            transform: rotate(-45deg);
+            animation: fall linear infinite;
+            opacity: 0.6;
+        }
+
+        .heart:before, .heart:after {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: red;
+            border-radius: 50%;
+        }
+
+        .heart:before {
+            top: -10px;
+            left: 0;
+        }
+
+        .heart:after {
+            left: 10px;
+            top: 0;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(0) rotate(-45deg); opacity: 0.8; }
+            100% { transform: translateY(100vh) rotate(-45deg); opacity: 0; }
+        }
+
+        /* Image de couple */
+        .couple-img {
+            width: 150px;
+            height: auto;
+            margin-top: 20px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>L'ENTRE DU DÉSIR</h1>
+    <div class="container">
+        <img src="https://i.imgur.com/q7GumFq.jpg" alt="Couple sensuel" class="couple-img">
+        <div class="box" id="defiBox">Cliquez pour piocher un défi</div>
+        <button class="btn" id="tirerDefi" onclick="piocherDefi()">Tirer un défi</button>
+        <div class="timer" id="timer">02:00</div>
+    </div>
+
+    <!-- Musique de fond -->
+    <audio id="musique" loop>
+        <source src="musique.mp3" type="audio/mp3">
+        Votre navigateur ne supporte pas la balise audio.
+    </audio>
+
+    <script>
+        // Liste des défis personnalisée
+        const defis = [
+            "S’embrasser langoureusement pendant 2 minutes.",
+            "Embrasser les différentes parties du corps (ventre, seins, cou) pendant 2 minutes.",
+            "Laisse ta langue jouer avec les tétons de ton partenaire.",
+            "Quelle partie de mon corps préfères-tu ?",
+            "Quand t'es-tu masturbé pour la dernière fois ?",
+            "Quel est l'endroit le plus fou où tu as fait l'amour ?",
+            "La langue ou les doigts ?",
+            "Échangeons nos tenues !",
+            "Embrasse la partie que tu préfères de mon corps.",
+            "Enlève un de mes vêtements en utilisant uniquement ta bouche.",
+            "Fais semblant d'avoir un orgasme.",
+            "Fais un strip-tease.",
+            "Fais un massage sensuel à ton partenaire.",
+            "Mets du chocolat sur le corps de ton partenaire et déguste-la.",
+            "Chuchote des mots coquins à l’oreille de ton partenaire pendant 2 minutes.",
+            "Fais un suçon.",
+            "Fais doucement glisser ton doigt tout le long de mon corps.",
+            "Prends-moi en levrette.",
+            "Faire l’amour dans un autre endroit que votre chambre.",
+            "Laisse ton/ta partenaire choisir une partie de ton corps à lécher, et fais pareil en retour.",
+            "Duo intime : laissez-vous guider par la musique et dansez de manière très rapprochée.",
+            "Passe un glaçon lentement sur le cou, la poitrine ou le ventre de ton/ta partenaire.",
+            "Retire un vêtement en dansant sensuellement pour ton/ta partenaire.",
+            "Embrasse ton/ta partenaire tout en gardant les mains attachées derrière ton dos.",
+            "Réalisons l’un de tes fantasmes les plus fous.",
+            "Bande les yeux de ton/ta partenaire et fais-lui deviner où tu l’embrasses.",
+            "Excite-moi sans me toucher.",
+            "Fais de moi ce que tu veux.",
+            "Domine-moi.",
+            "Sois mazo.",
+            "Quelle est ta position sexuelle préférée ?"
+        ];
+
+        let timerInterval;
+        let timerRunning = false;
+
+        // Fonction pour démarrer la musique
+        document.getElementById("musique").play();
+
+        // Fonction pour gérer l'affichage des défis
+        function piocherDefi() {
+            let randomIndex = Math.floor(Math.random() * defis.length);
+            let defi = defis[randomIndex];
+            document.getElementById("defiBox").innerText = defi;
+
+            // Activer le suspense entre les défis
+            document.getElementById("tirerDefi").disabled = true; // Désactive le bouton pour un peu de suspense
+            setTimeout(() => {
+                document.getElementById("tirerDefi").disabled = false; // Réactive le bouton après 2 secondes
+            }, 2000);
+
+            // Démarrer le timer de 2 minutes
+            startTimer();
+        }
+
+        // Fonction pour démarrer le timer
+        function startTimer() {
+            if (timerRunning) {
+                clearInterval(timerInterval); // Si un timer est déjà en cours, l'annuler avant d'en démarrer un nouveau
+            }
+
+            let timeLeft = 120; // 2 minutes en secondes
+            timerRunning = true;
+            document.getElementById("timer").style.display = "block"; // Afficher le timer
+
+            timerInterval = setInterval(function() {
+                let minutes = Math.floor(timeLeft / 60);
+                let seconds = timeLeft % 60;
+                document.getElementById("timer").innerText = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                timeLeft--;
+
+                if (timeLeft < 0) {
+                    clearInterval(timerInterval); // Arrêter le timer quand il est terminé
+                    document.getElementById("timer").style.display = "none"; // Masquer le timer
+                    timerRunning = false;
+                }
+            }, 1000);
+        }
+
+        // Générer des cœurs animés
+        function createHearts() {
+            let heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.style.left = Math.random() * window.innerWidth + 'px';
+            heart.style.animationDuration = Math.random() * 2 + 3 + 's'; // Durée aléatoire pour la chute des cœurs
+            document.body.appendChild(heart);
+
+            // Supprimer le cœur après la fin de l'animation
+            setTimeout(() => {
+                heart.remove();
+            }, 5000);
+        }
+
+        // Créer un cœur toutes les 0.5 seconde
+        setInterval(createHearts, 500);
+
+    </script>
+</body>
+</html>
